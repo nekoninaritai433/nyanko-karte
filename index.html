@@ -1008,16 +1008,55 @@ select option {background:#fff;}
 
 <script>
 // ── STATE ──
-let S=JSON.parse(localStorage.getItem('pastelv2')||'null')||{
-  cats:[{id:1,name:'むぎ',emoji:'🐱',birth:'',breed:'ミックス'}],
-  active:1,
-  data:{1:{logs:[],vaccines:[],foods:[],toilets:[],conds:[],symptoms:[],symTypes:[],diary:[]}}
-};
-let selEmoji='🐱',selToilet='💧 おしっこ',selFoodType='🥣 ドライ';
-let selCond=null,selSymType=null,selSev=null,selMood=null;
+// 全ての可能なキーを確認してデータ復元（GitHub Pages PWA対応）
+const STORAGE_KEYS = ['nyanko_karte_v1', 'pastelv2', 'nyanko_karte', 'noel26', 'infobar1', 'pastel1'];
+const STORAGE_KEY  = 'nyanko_karte_v1'; // 新メインキー（固定）
+
+function loadState() {
+  for (const key of STORAGE_KEYS) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.cats && parsed.cats.length > 0) {
+          console.log('✅ データ復元成功:', key, parsed.cats.length+'匹');
+          // 新メインキーにも保存
+          if (key !== STORAGE_KEY) {
+            try { localStorage.setItem(STORAGE_KEY, raw); } catch(e){}
+          }
+          return parsed;
+        }
+      }
+    } catch(e) { console.warn('キー読み込みエラー:', key, e); }
+  }
+  console.log('ℹ️ 初回起動 / データなし');
+  return {
+    cats: [{id:1, name:'むぎ', emoji:'🐱', birth:'', breed:'ミックス'}],
+    active: 1,
+    data: {1:{logs:[],vaccines:[],foods:[],toilets:[],conds:[],symptoms:[],symTypes:[],diary:[]}}
+  };
+}
+
+let S = loadState();
+let selEmoji='🐱', selToilet='💧 おしっこ', selFoodType='🥣 ドライ';
+let selCond=null, selSymType=null, selSev=null, selMood=null;
 
 const PASTEL_BG=['#fce8f0','#e4f3fb','#e4f7f0','#fef8e4','#f0ecfb','#feeee6'];
-const save=()=>localStorage.setItem('pastelv2',JSON.stringify(S));
+
+// 保存：新旧両キーに同時書き込みで取りこぼし防止
+function save() {
+  const json = JSON.stringify(S);
+  // 全キーに保存（どのスコープで開いても読める）
+  for (const key of [STORAGE_KEY, 'pastelv2']) {
+    try { localStorage.setItem(key, json); } catch(e) { console.warn('保存失敗:', key, e); }
+  }
+}
+
+// ページを離れる・隠れる前に必ず保存
+window.addEventListener('beforeunload', () => save());
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); });
+window.addEventListener('pagehide', () => save());
+
 const today=()=>new Date().toISOString().split('T')[0];
 const dow=d=>{const days=['sun','mon','tue','wed','thu','fri','sat'];return days[new Date(d).getDay()];}
 function cd(id){
@@ -1556,7 +1595,7 @@ function exportDiaryTxt(){
 }
 function clearAll(){
   if(!confirm('本当に全データを削除しますか？\nこの操作は元に戻せません。'))return;
-  localStorage.removeItem('pastelv2');
+  STORAGE_KEYS.forEach(k=>localStorage.removeItem(k));
   S={cats:[{id:1,name:'むぎ',emoji:'🐱',birth:'',breed:'ミックス'}],active:1,data:{1:{logs:[],vaccines:[],foods:[],toilets:[],conds:[],symptoms:[],symTypes:[],diary:[]}}};
   save();renderCats();renderAll();toast('リセットしたよ🗑');closeModal('modal-save');
 }
@@ -1737,11 +1776,14 @@ function toast(msg){const el=document.getElementById('toast');el.textContent=msg
   } catch(e){console.warn('icon gen failed',e);}
 
   // ── manifest.json をBlob URLで生成 ──
+  // start_url を現在の絶対URLに固定してlocalStorageのスコープを統一
+  const currentUrl=location.href.split('?')[0].split('#')[0];
   const manifest={
     name:'にゃんこカルテ',
     short_name:'にゃんカルテ',
     description:'猫ちゃんの健康管理アプリ',
-    start_url:'.',
+    start_url:currentUrl,
+    scope:currentUrl.substring(0,currentUrl.lastIndexOf('/')+1),
     display:'standalone',
     orientation:'portrait',
     background_color:'#fff8fc',
@@ -1828,7 +1870,35 @@ function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function bgClose(e,id){if(e.target.classList.contains('overlay'))closeModal(id);}
 
+// ── 起動時データ確認（デバッグ用・初回のみトースト） ──
+function checkDataOnStart(){
+  const count = S.cats ? S.cats.length : 0;
+  console.log('🐾 にゃんこカルテ起動 / 猫の数:', count, '/ キー:', STORAGE_KEY);
+  // 万が一データが消えていたら警告
+  if(count===1 && S.cats[0].name==='むぎ' && !S.data[1]?.logs?.length){
+    // 初期値かもしれないので全キーを再スキャン
+    for(const key of STORAGE_KEYS){
+      if(key===STORAGE_KEY)continue;
+      try{
+        const raw=localStorage.getItem(key);
+        if(raw){
+          const p=JSON.parse(raw);
+          if(p && p.cats && (p.cats.length>1 || p.cats[0]?.name!=='むぎ')){
+            S=p;
+            save();
+            renderCats();renderAll();
+            toast('データを復元しました🐾');
+            console.log('緊急復元:', key);
+            return;
+          }
+        }
+      }catch(e){}
+    }
+  }
+}
+
 init();
+checkDataOnStart();
 </script>
 </body>
 </html>
