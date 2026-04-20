@@ -343,6 +343,98 @@ textarea.form-input{min-height:72px;resize:vertical;}
 </div>
 
 <script>
+/* ===== IndexedDB for photos ===== */
+var DB_NAME = "nekoZukanDB";
+var DB_VERSION = 1;
+var db = null;
+
+function openDB(cb){
+  if(db){cb(db);return;}
+  var req = indexedDB.open(DB_NAME, DB_VERSION);
+  req.onupgradeneeded = function(e){
+    var d = e.target.result;
+    if(!d.objectStoreNames.contains("photos")){
+      d.createObjectStore("photos", {keyPath:"id"});
+    }
+  };
+  req.onsuccess = function(e){db=e.target.result;cb(db);};
+  req.onerror = function(e){console.error("DB error",e);cb(null);};
+}
+
+function savePhoto(id, data, cb){
+  openDB(function(d){
+    if(!d){cb&&cb();return;}
+    var tx = d.transaction("photos","readwrite");
+    tx.objectStore("photos").put({id:id, data:data});
+    tx.oncomplete = function(){cb&&cb();};
+  });
+}
+
+function getPhoto(id, cb){
+  openDB(function(d){
+    if(!d){cb(null);return;}
+    var tx = d.transaction("photos","readonly");
+    var req = tx.objectStore("photos").get(id);
+    req.onsuccess = function(){cb(req.result?req.result.data:null);};
+    req.onerror = function(){cb(null);};
+  });
+}
+
+function deletePhoto(id, cb){
+  openDB(function(d){
+    if(!d){cb&&cb();return;}
+    var tx = d.transaction("photos","readwrite");
+    tx.objectStore("photos").delete(id);
+    tx.oncomplete = function(){cb&&cb();};
+  });
+}
+
+function deleteAllPhotosForCat(catName, cb){
+  openDB(function(d){
+    if(!d){cb&&cb();return;}
+    var tx = d.transaction("photos","readwrite");
+    var store = tx.objectStore("photos");
+    var req = store.openCursor();
+    req.onsuccess = function(e){
+      var cursor = e.target.result;
+      if(cursor){
+        if(cursor.key.indexOf("cat_"+catName+"_")===0){
+          cursor.delete();
+        }
+        cursor.continue();
+      }
+    };
+    tx.oncomplete = function(){cb&&cb();};
+  });
+}
+
+function generatePhotoId(prefix, index){
+  return prefix+"_"+index+"_"+Date.now();
+}
+
+/* photo loading cache */
+var photoCache = {};
+
+function loadPhotoIntoCache(id, cb){
+  if(photoCache[id]){cb(photoCache[id]);return;}
+  getPhoto(id, function(data){
+    if(data)photoCache[id]=data;
+    cb(data);
+  });
+}
+
+/* Load all photos for rendering - fills img elements by data-photoid */
+function loadPhotosInPage(){
+  document.querySelectorAll("img[data-photoid]").forEach(function(img){
+    var id = img.getAttribute("data-photoid");
+    if(!id)return;
+    loadPhotoIntoCache(id, function(data){
+      if(data)img.src=data;
+    });
+  });
+}
+/* ===== End IndexedDB ===== */
+
 
 
 var AREAS=[
@@ -389,7 +481,7 @@ function importData(e){
       var dates=diaries.map(function(d){return d.date;});
       var dAdded=0;
       diaryData.forEach(function(d){if(dates.indexOf(d.date)<0){diaries.push(d);dAdded++;}});
-      persist();persistDiary();render();
+      persist();persistDiary();openDB(function(){render();});
       alert(added+"匹・日記"+dAdded+"件を追加しました！");
     }catch(err){alert("読み込みに失敗しました："+err.message);}
   };
@@ -405,8 +497,24 @@ var selCats = [];
 var editDiaryIdx = -1;
 
 function persistDiary(){
-  try{localStorage.setItem("neko_diary_v1",JSON.stringify(diaries));}
-  catch(e){alert("保存容量が不足しています。写真を減らしてみてください。");}
+  try{
+    var slim=diaries.map(function(d){
+      var copy=JSON.parse(JSON.stringify(d));
+      if(copy.photos){
+        copy.photos=copy.photos.map(function(p){
+          if(isPhotoId(p))return p;
+          var pid="photo_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
+          savePhoto(pid,p,null);
+          photoCache[pid]=p;
+          return pid;
+        });
+      }
+      return copy;
+    });
+    localStorage.setItem("neko_diary_v1",JSON.stringify(slim));
+  }catch(e){
+    alert("日記の保存に失敗しました: "+e.message);
+  }
 }
 
 function setWeather(w){
@@ -534,7 +642,7 @@ function renderDiaryTab(){
     html+="<div class='diary-card-body'>";
     if(d.photos&&d.photos.length){
       html+="<div class='diary-photos'>";
-      d.photos.forEach(function(p){html+="<div class='diary-photo'><img src='"+p+"'></div>";});
+      d.photos.forEach(function(p){var imgTag=isPhotoId(p)?"<img data-photoid='"+p+"' src=''>":"<img src='"+p+"'>";html+="<div class='diary-photo'>"+imgTag+"</div>";});
       html+="</div>";
     }
     if(d.memo)html+="<div class='diary-memo'>"+esc(d.memo)+"</div>";
@@ -543,6 +651,7 @@ function renderDiaryTab(){
   });
   html+="</div>";
   el.innerHTML=html;
+  loadPhotosInPage();
 }
 
 function openDiaryDetail(i){
@@ -556,7 +665,7 @@ function openDiaryDetail(i){
 
   if(d.photos&&d.photos.length){
     var ph=document.createElement("div");ph.className="detail-photos";
-    d.photos.forEach(function(p){var dv=document.createElement("div");dv.className="detail-photo";var img=document.createElement("img");img.src=p;dv.appendChild(img);ph.appendChild(dv);});
+    d.photos.forEach(function(p){var dv=document.createElement("div");dv.className="detail-photo";var img=document.createElement("img");if(isPhotoId(p)){img.setAttribute("data-photoid",p);}else{img.src=p;}dv.appendChild(img);ph.appendChild(dv);});
     ds.appendChild(ph);
   }
   if(d.cats&&d.cats.length){
@@ -582,8 +691,24 @@ function openDiaryDetail(i){
 }
 
 function persist(){
-  try{localStorage.setItem("neko_v5",JSON.stringify(cats));}
-  catch(e){alert("保存容量が不足しています。写真を減らしてみてください。");}
+  try{
+    var slim=cats.map(function(c){
+      var copy=JSON.parse(JSON.stringify(c));
+      if(copy.photos){
+        copy.photos=copy.photos.map(function(p){
+          if(isPhotoId(p))return p;
+          var pid="photo_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
+          savePhoto(pid,p,null);
+          photoCache[pid]=p;
+          return pid;
+        });
+      }
+      return copy;
+    });
+    localStorage.setItem("neko_v5",JSON.stringify(slim));
+  }catch(e){
+    alert("メタデータの保存に失敗しました: "+e.message);
+  }
 }
 function areaInfo(n){return AREAS.find(function(a){return a.name===n;})||{name:n,icon:"📍",color:"#888"};}
 
@@ -723,7 +848,10 @@ function cardHtml(c){
   var areaColor=info?info.color:"#888";
   var html="<div class='cat-card' onclick='openDetail("+idx+")'>";
   html+="<div class='cat-card-photo'>";
-  html+=mainPhoto?"<img src='"+mainPhoto+"'>":"🐱";
+  if(mainPhoto){
+    if(isPhotoId(mainPhoto)){html+="<img data-photoid='"+mainPhoto+"' src=''>";}
+    else{html+="<img src='"+mainPhoto+"'>";}
+  }else{html+="🐱";}
   if(c.neutered)html+="<span class='badge-neu'>去勢済</span>";
   if(sl)html+="<span class='badge-seen' style='background:"+sl.color+"'>"+sl.text+"</span>";
   if(photos.length>1)html+="<span class='photo-count'>📷"+photos.length+"</span>";
@@ -748,15 +876,29 @@ function compressPhoto(file,cb){
   var img=new Image();
   var url=URL.createObjectURL(file);
   img.onload=function(){
-    var MAX=400,w=img.width,h=img.height;
+    var MAX=600,w=img.width,h=img.height;
     if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
     var canvas=document.createElement("canvas");
     canvas.width=w;canvas.height=h;
     canvas.getContext("2d").drawImage(img,0,0,w,h);
-    cb(canvas.toDataURL("image/jpeg",0.55));
+    var data=canvas.toDataURL("image/jpeg",0.75);
+    var photoId="photo_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
+    photoCache[photoId]=data;
+    savePhoto(photoId,data,function(){cb(photoId);});
     URL.revokeObjectURL(url);
   };
   img.src=url;
+}
+
+function isPhotoId(s){return s&&s.indexOf("photo_")===0;}
+
+function getPhotoSrc(idOrData, cb){
+  if(!idOrData){cb("");return;}
+  if(isPhotoId(idOrData)){
+    loadPhotoIntoCache(idOrData, function(data){cb(data||"");});
+  }else{
+    cb(idOrData);
+  }
 }
 
 /* 写真グリッド描画（共通） */
@@ -765,10 +907,12 @@ function renderPhotoGrid(gridId, photos, removeFunc, addFunc){
   if(!g)return;
   var html="";
   photos.forEach(function(p,i){
-    html+="<div class='photo-thumb'><img src='"+p+"'><button class='del-photo' onclick='"+removeFunc+"("+i+")'>✕</button></div>";
+    var imgTag=isPhotoId(p)?"<img data-photoid='"+p+"' src=''>":"<img src='"+p+"'>";
+    html+="<div class='photo-thumb'>"+imgTag+"<button class='del-photo' onclick='"+removeFunc+"("+i+")'>✕</button></div>";
   });
   html+="<div class='photo-add-btn'><input type='file' accept='image/*' multiple onchange='"+addFunc+"(event)'><span style='font-size:22px'>📷</span><span>追加</span></div>";
   g.innerHTML=html;
+  loadPhotosInPage();
 }
 
 /* 追加フォーム */
