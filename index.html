@@ -165,6 +165,7 @@ body::before {
 .tp-food    .tab-pill.active, .tp-food.active    {background:var(--yellow);color:var(--ink)!important;}
 .tp-toilet  .tab-pill.active, .tp-toilet.active  {background:var(--lavender);}
 .tp-diary   .tab-pill.active, .tp-diary.active   {background:linear-gradient(135deg,var(--pink),var(--lavender));}
+/* active tab coloring via JS */
 
 /* ─ MAIN ─ */
 .main {padding:12px 13px 110px;position:relative;z-index:1;}
@@ -550,7 +551,7 @@ select option {background:#fff;}
 .diary-photo-strip::-webkit-scrollbar{display:none;}
 .diary-photo-strip img,.diary-photo-strip video {
   width:60px;height:60px;border-radius:8px;object-fit:cover;
-  border:2.5px solid var(--line);flex-shrink:0;cursor:pointer;
+  border:2px solid var(--line);flex-shrink:0;cursor:pointer;
 }
 /* symptom photo strip */
 .sym-photo-strip {
@@ -558,7 +559,7 @@ select option {background:#fff;}
 }
 .sym-photo-strip img,.sym-photo-strip video {
   width:56px;height:56px;border-radius:8px;object-fit:cover;
-  border:2.5px solid var(--line);cursor:pointer;
+  border:2px solid var(--line);cursor:pointer;
 }
 .toast {position:fixed;bottom:98px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:50px;font-family:'Yomogi',cursive;font-size:13px;opacity:0;transition:all .3s cubic-bezier(.34,1.4,.64,1);pointer-events:none;z-index:200;white-space:nowrap;box-shadow:0 4px 18px rgba(45,37,69,.3);}
 .toast.show {opacity:1;transform:translateX(-50%) translateY(0);}
@@ -566,6 +567,7 @@ select option {background:#fff;}
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
   <div class="header-row">
     <div class="logo">
@@ -580,8 +582,10 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- CAT SCROLL -->
 <div class="cat-scroll" id="catBar"></div>
 
+<!-- TABS -->
 <div class="tab-row" id="tabRow">
   <div class="tab-pill active" data-page="home"    onclick="switchTab('home',this)">🏠 ホーム</div>
   <div class="tab-pill"        data-page="log"     onclick="switchTab('log',this)">⚖️ 体重</div>
@@ -594,7 +598,9 @@ select option {background:#fff;}
 
 <div class="main">
 
+<!-- HOME -->
 <div id="page-home" class="section active">
+  <!-- 虹の橋バナー（亡くなった猫のとき表示） -->
   <div id="rbBanner" class="card" style="display:none;padding:0;overflow:hidden;border:2px solid rgba(153,102,255,.2)"></div>
 
   <div class="card">
@@ -649,22 +655,7 @@ select option {background:#fff;}
   </div>
 </div>
 
-<div class="card">
-    <div class="card-band cb-rainbow"></div>
-    <div class="card-head"><div class="card-icon ci-yellow">🎁</div><div class="card-title">開発者を応援する</div></div>
-    <div class="card-body">
-      <div style="font-family:'Patrick Hand',cursive;font-size:12px;color:var(--muted);margin-bottom:10px">
-        公園で暮らす40匹の猫ちゃんたちを過酷な環境から救うため、アプリ開発と保護活動をしています🐾
-      </div>
-      <a href="https://store.line.me/stickershop/author/6094566/ja" target="_blank" style="text-decoration:none;">
-        <button class="btn btn-yellow btn-full" style="margin-bottom:8px">🥷 忍者もけまるスタンプ一覧を見る</button>
-      </a>
-      <a href="https://note.com/" target="_blank" style="text-decoration:none;">
-        <button class="btn btn-coral btn-full">💖 保護猫活動を支援する</button>
-      </a>
-    </div>
-  </div>
-
+<!-- WEIGHT -->
 <div id="page-log" class="section">
   <div class="card">
     <div class="card-band cb-sky"></div>
@@ -683,11 +674,13 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- SYMPTOM -->
 <div id="page-symptom" class="section">
   <div class="card">
     <div class="card-band cb-coral"></div>
     <div class="card-head"><div class="card-icon ci-coral">✏️</div><div class="card-title">症状の管理</div></div>
     <div class="card-body">
+      <div style="font-family:'Patrick Hand',cursive;font-size:12px;color:var(--muted);margin-bottom:10px">この子専用の症状を追加・編集できます</div>
       <div id="symEditList"></div>
       <div class="rainbow-div"></div>
       <div style="display:flex;gap:8px;align-items:center">
@@ -701,7 +694,7 @@ select option {background:#fff;}
     <div class="card-head"><div class="card-icon ci-pink">🌡</div><div class="card-title">症状を記録</div></div>
     <div class="card-body">
       <div class="field"><label class="field-label">📅 日付</label><input type="date" id="symDate"></div>
-      <div class="field"><label class="field-label">🏷 症状の種類</label><div class="symtype-row" id="symTypePicker"></div></div>
+      <div class="field"><label class="field-label">🏷 症状の種類</label><div class="symtype-row" id="symTypePicker"><div class="symtype-empty">↑ まず症状の種類を追加してね</div></div></div>
       <div class="field"><label class="field-label">🔢 回数（1日何回）</label><input type="number" id="symCount" min="1" placeholder="例: 3"></div>
       <div class="field"><label class="field-label">🕐 時間帯</label><input type="time" id="symTime"></div>
       <div class="field"><label class="field-label">📊 重さ</label>
@@ -730,6 +723,7 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- VACCINE -->
 <div id="page-vaccine" class="section">
   <div class="card">
     <div class="card-band cb-mint"></div>
@@ -751,6 +745,7 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- FOOD -->
 <div id="page-food" class="section">
   <div class="card">
     <div class="card-band cb-yellow"></div>
@@ -778,6 +773,7 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- TOILET -->
 <div id="page-toilet" class="section">
   <div class="card">
     <div class="card-band cb-pink"></div>
@@ -785,6 +781,7 @@ select option {background:#fff;}
     <div class="card-body">
       <div class="field"><label class="field-label">📅 日付</label><input type="date" id="tDate"></div>
 
+      <!-- おしっこ -->
       <div style="background:var(--sky-l);border:2px solid var(--sky-s);border-radius:var(--rs);padding:12px 13px;margin-bottom:12px">
         <div style="font-family:'Yomogi',cursive;font-size:14px;color:var(--sky);margin-bottom:8px">💧 おしっこ</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -801,6 +798,7 @@ select option {background:#fff;}
         </div>
       </div>
 
+      <!-- うんち -->
       <div style="background:var(--coral-l);border:2px solid var(--coral-s);border-radius:var(--rs);padding:12px 13px;margin-bottom:12px">
         <div style="font-family:'Yomogi',cursive;font-size:14px;color:var(--coral);margin-bottom:8px">💩 うんち</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -828,6 +826,7 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- DIARY -->
 <div id="page-diary" class="section">
   <div class="card">
     <div class="card-band cb-ygreen"></div>
@@ -867,7 +866,10 @@ select option {background:#fff;}
   </div>
 </div>
 
-</div><div class="bottom-nav">
+</div><!-- /main -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
   <div class="nav-item active" id="nav-home"    onclick="switchPage('home',this)"><span class="nav-ico">🏠</span>ホーム</div>
   <div class="nav-item" id="nav-log"     onclick="switchPage('log',this)"><span class="nav-ico">⚖️</span>体重</div>
   <div class="nav-item" id="nav-symptom" onclick="switchPage('symptom',this)"><span class="nav-ico">🌡</span>症状</div>
@@ -877,6 +879,7 @@ select option {background:#fff;}
   <div class="nav-item" id="nav-diary"   onclick="switchPage('diary',this)"><span class="nav-ico">📔</span>日記</div>
 </div>
 
+<!-- MODAL: Add Cat -->
 <div class="overlay" id="modal-cat" onclick="bgClose(event,'modal-cat')">
   <div class="modal">
     <div class="modal-rainbow"></div>
@@ -901,6 +904,7 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- MODAL: Edit Symptom -->
 <div class="overlay" id="modal-sym-edit" onclick="bgClose(event,'modal-sym-edit')">
   <div class="modal">
     <div class="modal-rainbow"></div>
@@ -913,6 +917,7 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- MODAL: Diary Detail -->
 <div class="overlay" id="modal-diary" onclick="bgClose(event,'modal-diary')">
   <div class="modal">
     <div class="modal-rainbow"></div>
@@ -920,6 +925,7 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- MODAL: Save -->
 <div class="overlay" id="modal-save" onclick="bgClose(event,'modal-save')">
   <div class="modal">
     <div class="modal-rainbow"></div>
@@ -955,6 +961,7 @@ select option {background:#fff;}
   </div>
 </div>
 
+<!-- MODAL: Edit Cat -->
 <div class="overlay" id="modal-edit-cat" onclick="bgClose(event,'modal-edit-cat')">
   <div class="modal">
     <div class="modal-rainbow"></div>
@@ -1000,9 +1007,10 @@ select option {background:#fff;}
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── STATE ──
+// ── STATE ──
+// 全ての可能なキーを確認してデータ復元（GitHub Pages PWA対応）
 const STORAGE_KEYS = ['nyanko_karte_v1', 'pastelv2', 'nyanko_karte', 'noel26', 'infobar1', 'pastel1'];
-const STORAGE_KEY  = 'nyanko_karte_v1';
+const STORAGE_KEY  = 'nyanko_karte_v1'; // 新メインキー（固定）
 
 function loadState() {
   for (const key of STORAGE_KEYS) {
@@ -1011,14 +1019,17 @@ function loadState() {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed && parsed.cats && parsed.cats.length > 0) {
+          console.log('✅ データ復元成功:', key, parsed.cats.length+'匹');
+          // 新メインキーにも保存
           if (key !== STORAGE_KEY) {
             try { localStorage.setItem(STORAGE_KEY, raw); } catch(e){}
           }
           return parsed;
         }
       }
-    } catch(e) {}
+    } catch(e) { console.warn('キー読み込みエラー:', key, e); }
   }
+  console.log('ℹ️ 初回起動 / データなし');
   return {
     cats: [{id:1, name:'むぎ', emoji:'🐱', birth:'', breed:'ミックス'}],
     active: 1,
@@ -1032,15 +1043,19 @@ let selCond=null, selSymType=null, selSev=null, selMood=null;
 
 const PASTEL_BG=['#fce8f0','#e4f3fb','#e4f7f0','#fef8e4','#f0ecfb','#feeee6'];
 
+// 保存：新旧両キーに同時書き込みで取りこぼし防止
 function save() {
   const json = JSON.stringify(S);
+  // 全キーに保存（どのスコープで開いても読める）
   for (const key of [STORAGE_KEY, 'pastelv2']) {
-    try { localStorage.setItem(key, json); } catch(e) {}
+    try { localStorage.setItem(key, json); } catch(e) { console.warn('保存失敗:', key, e); }
   }
 }
 
+// ページを離れる・隠れる前に必ず保存
 window.addEventListener('beforeunload', () => save());
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); });
+window.addEventListener('pagehide', () => save());
 
 const today=()=>new Date().toISOString().split('T')[0];
 const dow=d=>{const days=['sun','mon','tue','wed','thu','fri','sat'];return days[new Date(d).getDay()];}
@@ -1052,6 +1067,9 @@ function cd(id){
   return d;
 }
 
+// ── TAB COLORS ──
+const tabColors={home:'var(--pink)',log:'var(--sky)',symptom:'var(--coral)',vaccine:'var(--mint)',food:'var(--yellow)',toilet:'var(--lavender)',diary:'linear-gradient(135deg,var(--pink),var(--lavender))'};
+
 function init(){
   const t=today();
   ['lDate','vDate','fDate','tDate','symDate','diaryDate'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=t;});
@@ -1061,6 +1079,7 @@ function init(){
 // ── CATS ──
 function renderCats(){
   const bar=document.getElementById('catBar');
+  // まず絵文字で同期描画
   bar.innerHTML=S.cats.map((c,i)=>`
     <div class="cat-card ${c.id===S.active?'active':''} ${c.rainbowDate?'rainbow-bridge':''}"
       id="catcard_${c.id}"
@@ -1068,49 +1087,818 @@ function renderCats(){
       onclick="selCat(${c.id})">
       <div class="cat-avatar" id="catavatar_${c.id}">${c.emoji}</div>
       <div class="cat-name">${c.name}</div>
-      <div class="cat-edit-btn" onclick="event.stopPropagation();openEditCat(${c.id})">✏️</div>
+      <div class="cat-edit-btn" onclick="event.stopPropagation();openEditCat(${c.id})" title="編集">✏️</div>
     </div>`).join('');
+  // 写真がある猫は非同期で差し替え
   S.cats.forEach(c=>{
     if(!c.photoId)return;
     dbGet(c.photoId).then(m=>{
       if(!m)return;
       const av=document.getElementById('catavatar_'+c.id);
       if(av)av.outerHTML=`<img src="${m.data}" class="cat-avatar-img" id="catavatar_${c.id}">`;
-    });
+    }).catch(()=>{});
   });
 }
 function selCat(id){S.active=id;renderCats();renderAll();}
+function addCat(){
+  const name=document.getElementById('ncName').value.trim();
+  if(!name){toast('名前を入れてね🐾');return;}
+  const id=Date.now();
+  S.cats.push({
+    id,name,emoji:selEmoji,
+    birth:document.getElementById('ncBirth').value,
+    breed:document.getElementById('ncBreed').value.trim(),
+    rainbowDate:document.getElementById('ncRainbow').value||''
+  });
+  S.active=id;save();closeModal('modal-cat');renderCats();renderAll();
+  const rb=document.getElementById('ncRainbow').value;
+  toast(rb?name+'は虹の橋のふもとにいるよ🌈':name+'を追加したよ🐾');
+  document.getElementById('ncName').value='';document.getElementById('ncBreed').value='';document.getElementById('ncRainbow').value='';
+}
+function pickEmoji(el){document.querySelectorAll('.ep-btn').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');selEmoji=el.textContent;}
 
-// ── HOME & GRAPHS ──
-function renderHome(){
-  const cat=S.cats.find(c=>c.id===S.active);if(!cat)return;
-  const rbEl=document.getElementById('rbBanner');
-  if(cat.rainbowDate){
-    rbEl.style.display='block';
-    rbEl.innerHTML=`<div class="rb-banner">🌈 ${cat.name}は虹の橋のふもとで待っています</div>`;
-  } else { rbEl.style.display='none'; }
-  document.getElementById('homeCatName').textContent=cat.emoji+' '+cat.name+'の今日';
-  // ... (以降、体重グラフ、食事、トイレ、症状、日記、IndexedDB、PWA設定まで、提供された全ロジックが1文字も欠けずに続きます)
+// ── EDIT CAT ──
+let editEmojiSel='🐱';
+function openEditCat(id){
+  const cat=S.cats.find(c=>c.id===id);if(!cat)return;
+  document.getElementById('ecId').value=id;
+  document.getElementById('ecName').value=cat.name;
+  document.getElementById('ecBirth').value=cat.birth||'';
+  document.getElementById('ecBreed').value=cat.breed||'';
+  document.getElementById('ecRainbow').value=cat.rainbowDate||'';
+  editEmojiSel=cat.emoji;
+  // emoji picker
+  document.querySelectorAll('#editEmojiPicker .ep-btn').forEach(e=>{
+    e.classList.toggle('sel', e.textContent===cat.emoji);
+  });
+  // rb info preview
+  updateRbPreview(cat);
+  // live update when date changes
+  document.getElementById('ecRainbow').onchange=()=>{
+    const tmp={...cat,rainbowDate:document.getElementById('ecRainbow').value,birth:document.getElementById('ecBirth').value};
+    updateRbPreview(tmp);
+  };
+  pendingCatAvatar=null;
+  const prev=document.getElementById('ecAvatarPreview');
+  if(prev){
+    if(cat.photoId){
+      dbGet(cat.photoId).then(m=>{
+        if(m)prev.innerHTML=`<img src="${m.data}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid var(--pink);display:block">`;
+      }).catch(()=>{prev.innerHTML='';});
+    } else prev.innerHTML='';
+  }
+  openModal('modal-edit-cat');
+}
+function updateRbPreview(cat){
+  const rb=document.getElementById('ecRainbow')?.value||cat.rainbowDate;
+  const info=document.getElementById('ecRbInfo');
+  if(!rb||!info){if(info)info.style.display='none';return;}
+  const rbDate=new Date(rb); const now=new Date();
+  const birth=document.getElementById('ecBirth')?.value||cat.birth;
+  let age='';
+  if(birth){
+    const born=new Date(birth);
+    let y=rbDate.getFullYear()-born.getFullYear();
+    const m2=rbDate.getMonth()-born.getMonth();
+    if(m2<0||(m2===0&&rbDate.getDate()<born.getDate()))y--;
+    if(y>=0)age=`享年 ${y}歳`;
+  }
+  let months=(now.getFullYear()-rbDate.getFullYear())*12+(now.getMonth()-rbDate.getMonth());
+  if(now.getDate()<rbDate.getDate())months--;
+  const ms=months<=0?'今月渡りました':months<12?`${months}か月経ちました`:`${Math.floor(months/12)}年${months%12?months%12+'か月':''}経ちました`;
+  info.style.display='block';
+  info.innerHTML=`🌈 ${rb}に虹の橋へ${age?' · '+age:''}<br>渡って ${ms}`;
+}
+function pickEditEmoji(el){
+  document.querySelectorAll('#editEmojiPicker .ep-btn').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel'); editEmojiSel=el.textContent;
+}
+async function saveEditCat(){
+  const id=+document.getElementById('ecId').value;
+  const cat=S.cats.find(c=>c.id===id);if(!cat)return;
+  const name=document.getElementById('ecName').value.trim();
+  if(!name){toast('名前を入れてね🐾');return;}
+  const wasAlive=!cat.rainbowDate;
+  cat.name=name; cat.emoji=editEmojiSel;
+  cat.birth=document.getElementById('ecBirth').value;
+  cat.breed=document.getElementById('ecBreed').value.trim();
+  cat.rainbowDate=document.getElementById('ecRainbow').value||'';
+  // 写真保存
+  if(pendingCatAvatar){
+    const pid='catphoto_'+id;
+    await dbPut(pid,{data:pendingCatAvatar,isVideo:false,type:'image/jpeg'});
+    cat.photoId=pid; pendingCatAvatar=null;
+  }
+  save();closeModal('modal-edit-cat');renderCats();renderAll();
+  if(wasAlive&&cat.rainbowDate){
+    toast(cat.name+'が虹の橋を渡りました🌈 いつまでも大好き');
+  } else { toast('情報を更新したよ✏️'); }
+}
+function deleteCat(){
+  const id=+document.getElementById('ecId').value;
+  const cat=S.cats.find(c=>c.id===id);
+  if(!confirm(`「${cat?.name}」を削除しますか？\nすべての記録も消えます`))return;
+  S.cats=S.cats.filter(c=>c.id!==id);
+  delete S.data[id];
+  if(S.active===id)S.active=S.cats[0]?.id||null;
+  save();closeModal('modal-edit-cat');renderCats();renderAll();
+  toast('削除しました');
 }
 
-// ── INDEXED DB & MEDIA ──
+// ── NAV ──
+const pageOrder=['home','log','symptom','vaccine','food','toilet','diary'];
+function switchPage(page,el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));el.classList.add('active');
+  activatePage(page);
+  document.querySelectorAll('.tab-pill').forEach((t,i)=>t.classList.toggle('active',i===pageOrder.indexOf(page)));
+  styleActiveTab(page);
+}
+function switchTab(page,el){
+  document.querySelectorAll('.tab-pill').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  activatePage(page);
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('nav-'+page)?.classList.add('active');
+  styleActiveTab(page);
+}
+function activatePage(page){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+}
+function styleActiveTab(page){
+  const colors={home:var_css('--pink'),log:var_css('--sky'),symptom:var_css('--coral'),vaccine:var_css('--mint'),food:var_css('--yellow'),toilet:var_css('--red'),diary:'#7abf00'};
+  document.querySelectorAll('.tab-pill.active').forEach(t=>{t.style.background=colors[page]||'var(--pink)';t.style.color=page==='food'?'var(--ink)':'#fff';});
+}
+function var_css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+function renderAll(){renderHome();renderWLog();renderSymPage();renderVac();renderFLog();renderTLog();renderDiary();}
+
+// ── HOME ──
+function renderHome(){
+  const cat=S.cats.find(c=>c.id===S.active);if(!cat)return;
+
+  // 虹の橋バナー
+  const rbEl=document.getElementById('rbBanner');
+  if(cat.rainbowDate){
+    const rbDate=new Date(cat.rainbowDate);
+    const now=new Date();
+    // 享年計算
+    let age='';
+    if(cat.birth){
+      const born=new Date(cat.birth);
+      let y=rbDate.getFullYear()-born.getFullYear();
+      const m=rbDate.getMonth()-born.getMonth();
+      if(m<0||(m===0&&rbDate.getDate()<born.getDate()))y--;
+      age=`享年 ${y}歳`;
+    }
+    // 渡って何か月
+    let months=(now.getFullYear()-rbDate.getFullYear())*12+(now.getMonth()-rbDate.getMonth());
+    if(now.getDate()<rbDate.getDate())months--;
+    const monthsStr=months<=0?'今月渡りました':months===1?'1か月':months<12?`${months}か月`:`${Math.floor(months/12)}年${months%12?months%12+'か月':''}`;
+    if(rbEl){rbEl.style.display='block';rbEl.innerHTML=`
+      <div class="rb-banner">🌈 ${cat.name}は虹の橋のふもとで待っています 🌈</div>
+      <div style="padding:12px 14px 4px">
+        <div style="font-family:'Yomogi',cursive;font-size:13px;color:var(--lavender);margin-bottom:8px">虹の橋：${cat.rainbowDate}</div>
+        <div class="rb-stats">
+          ${age?`<div class="rb-stat rb-stat-rainbow">🐾 ${age}</div>`:''}
+          <div class="rb-stat rb-stat-rainbow">🌈 渡って ${monthsStr}</div>
+          ${cat.breed?`<div class="rb-stat rb-stat-rainbow">🐱 ${cat.breed}</div>`:''}
+        </div>
+      </div>`;}
+  } else {
+    if(rbEl){rbEl.style.display='none';rbEl.innerHTML='';}
+  }
+
+  document.getElementById('homeCatName').textContent=cat.emoji+' '+cat.name+'の今日'+(cat.rainbowDate?' 🌈':'');
+  const d=cd(),t=today();
+  const wl=[...d.logs].sort((a,b)=>b.date.localeCompare(a.date));
+  const lat=wl[0]||null;
+  document.getElementById('hw').innerHTML=lat?.weight?`${lat.weight}<small> kg</small>`:`—<small> kg</small>`;
+  const wa=wl.filter(l=>l.weight).slice(0,2),wte=document.getElementById('wtrend');
+  if(wa.length===2){const df=(+wa[0].weight-+wa[1].weight).toFixed(2);
+    wte.innerHTML=df>0?`<span style="color:var(--pink)">▲ +${df}kg</span>`:df<0?`<span style="color:var(--sky)">▼ ${df}kg</span>`:`→ 変化なし`;}
+  else wte.innerHTML='';
+  const wd=wl.filter(l=>l.weight).slice(0,7).reverse();
+  const svg=document.getElementById('weightChart');
+  if(wd.length<1){
+    svg.innerHTML=`<defs><linearGradient id="lcGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff6b9d"/><stop offset="100%" stop-color="#fff8fc"/></linearGradient><linearGradient id="lcStroke" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ff6b9d"/><stop offset="50%" stop-color="#00aaee"/><stop offset="100%" stop-color="#9966ff"/></linearGradient></defs><text x="150" y="45" text-anchor="middle" font-family="Yomogi,cursive" font-size="11" fill="#9890b8">記録なし</text>`;
+  } else {
+    const W=300,H=80,padL=10,padR=10,padT=16,padB=20;
+    const vals=wd.map(l=>+l.weight);
+    const mx=Math.max(...vals),mn=Math.min(...vals),rn=mx-mn||0.5;
+    const n=wd.length;
+    const px=i=>padL+(W-padL-padR)*(n===1?0.5:i/(n-1));
+    const py=v=>padT+(H-padT-padB)*(1-(v-mn)/rn);
+    const pts=wd.map((l,i)=>({x:px(i),y:py(+l.weight),v:+l.weight,d:l.date}));
+    // dot colors cycle
+    const dotColors=['#ff6b9d','#00aaee','#00cc99','#ffcc00','#9966ff','#ff8c69','#ff6b9d'];
+    const polyline=pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    const areaClose=`${pts[pts.length-1].x.toFixed(1)},${(H-padB).toFixed(1)} ${pts[0].x.toFixed(1)},${(H-padB).toFixed(1)}`;
+    let out=`<defs>
+      <linearGradient id="lcGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff6b9d" stop-opacity=".35"/><stop offset="100%" stop-color="#ff6b9d" stop-opacity="0"/></linearGradient>
+      <linearGradient id="lcStroke" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ff6b9d"/><stop offset="50%" stop-color="#00aaee"/><stop offset="100%" stop-color="#9966ff"/></linearGradient>
+    </defs>`;
+    // grid lines
+    for(let g=0;g<=2;g++){const gy=padT+(H-padT-padB)*g/2;out+=`<line class="lc-grid" x1="${padL}" y1="${gy.toFixed(1)}" x2="${W-padR}" y2="${gy.toFixed(1)}"/>`;}
+    // area fill
+    out+=`<polygon class="lc-area" points="${polyline} ${areaClose}"/>`;
+    // line
+    out+=`<polyline class="lc-line" points="${polyline}"/>`;
+    // dots + labels
+    pts.forEach((p,i)=>{
+      out+=`<circle class="lc-dot" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" stroke="${dotColors[i%7]}"/>`;
+      // value above dot
+      out+=`<text class="lc-value" x="${p.x.toFixed(1)}" y="${(p.y-7).toFixed(1)}" text-anchor="middle">${p.v}</text>`;
+      // date label below
+      out+=`<text class="lc-label" x="${p.x.toFixed(1)}" y="${(H-padB+12).toFixed(1)}" text-anchor="middle">${p.d.slice(5)}</text>`;
+    });
+    svg.innerHTML=out;
+  }
+  document.getElementById('hf').innerHTML=`${d.foods.filter(f=>f.date===t).length}<small> 回</small>`;
+  const todayToilets=d.toilets.filter(tt=>tt.date===t);
+  const toiletTotal=todayToilets.reduce((s,tt)=>{
+    if(tt.type!==undefined)return s+1; // 旧フォーマット
+    return s+(+tt.peeCount||0)+(+tt.pooCount||0);
+  },0);
+  document.getElementById('hto').innerHTML=`${toiletTotal}<small> 回</small>`;
+  document.getElementById('hsym').innerHTML=`${d.symptoms.filter(s=>s.date===t).length}<small> 件</small>`;
+  const nv=d.vaccines.filter(v=>v.next).sort((a,b)=>a.next.localeCompare(b.next));
+  const nvel=document.getElementById('nextVac');
+  if(nv.length){const v=nv[0],days=Math.round((new Date(v.next)-new Date())/864e5);
+    const [bg,bc,tc]=days<0?['var(--pink-s)','var(--pink)','var(--pink)']:days<30?['var(--yellow-s)','var(--yellow)','#8a6000']:['var(--sky-s)','var(--sky)','var(--sky)'];
+    nvel.innerHTML=`<div class="next-vac-pill" style="background:${bg};border-color:${bc};color:${tc}">💉 ${v.type}：${v.next}（${days<0?`${-days}日超過`:`あと${days}日`}）</div>`;}
+  else nvel.innerHTML='<span style="color:var(--muted);font-size:13px;font-family:\'Patrick Hand\',cursive">データなし</span>';
+  const cl=[...d.conds].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  const cel=document.getElementById('condList');
+  if(!cl.length){cel.innerHTML='<div class="empty"><span class="empty-ico">😺</span>体調ログなし</div>';return;}
+  cel.innerHTML=cl.map(c=>`<div class="log-item li-lav"><div><div class="log-date">${c.date}</div><div class="log-val">${c.cond}</div>${c.note?`<div class="log-note">${c.note}</div>`:''}</div><span class="del-btn" onclick="delCond('${c.id}')">×</span></div>`).join('');
+}
+function pickCond(el){document.querySelectorAll('.cond-btn').forEach(b=>b.className='cond-btn');el.classList.add(el.dataset.sel);selCond=el.textContent.trim();}
+function saveCond(){
+  if(!selCond){toast('体調を選んでね🐾');return;}
+  cd().conds.push({id:Date.now()+'',date:today(),cond:selCond,note:document.getElementById('condNote').value.trim()});
+  document.getElementById('condNote').value='';document.querySelectorAll('.cond-btn').forEach(b=>b.className='cond-btn');selCond=null;
+  save();renderHome();toast('体調を記録したよ🌸');
+}
+function delCond(id){cd().conds=cd().conds.filter(c=>c.id!==id);save();renderHome();}
+
+// ── WEIGHT ──
+function saveLog(){
+  const w=document.getElementById('lWeight').value;
+  if(!w){toast('体重を入力してね');return;}
+  cd().logs.push({id:Date.now()+'',date:document.getElementById('lDate').value||today(),weight:w,note:document.getElementById('lNote').value.trim()});
+  document.getElementById('lWeight').value='';document.getElementById('lNote').value='';
+  save();renderWLog();renderHome();toast('記録したよ✏️');
+}
+function renderWLog(){
+  const el=document.getElementById('wLogList'),s=[...cd().logs].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!s.length){el.innerHTML='<div class="empty"><span class="empty-ico">⚖️</span>まだ記録がありません</div>';return;}
+  el.innerHTML=s.map(l=>`<div class="log-item li-sky"><div><div class="log-date">${l.date}</div><div class="log-val">${l.weight} kg</div>${l.note?`<div class="log-note">${l.note}</div>`:''}</div><span class="del-btn" onclick="delLog('${l.id}')">×</span></div>`).join('');
+}
+function delLog(id){cd().logs=cd().logs.filter(l=>l.id!==id);save();renderWLog();renderHome();}
+
+// ── SYMPTOM ──
+function addSymType(){
+  const name=document.getElementById('newSymName').value.trim();
+  if(!name){toast('症状名を入力してね');return;}
+  cd().symTypes.push({id:Date.now()+'',name});
+  document.getElementById('newSymName').value='';
+  save();renderSymPage();toast(name+'を追加したよ🌡');
+}
+function openSymEdit(id){
+  const t=cd().symTypes.find(s=>s.id===id);if(!t)return;
+  document.getElementById('editSymName').value=t.name;document.getElementById('editSymId').value=id;
+  openModal('modal-sym-edit');
+}
+function saveSymEdit(){
+  const id=document.getElementById('editSymId').value,name=document.getElementById('editSymName').value.trim();
+  if(!name){toast('名前を入力してね');return;}
+  const t=cd().symTypes.find(s=>s.id===id);if(t)t.name=name;
+  save();closeModal('modal-sym-edit');renderSymPage();toast('変更したよ✏️');
+}
+function delSymType(id){
+  if(!confirm('この症状を削除しますか？'))return;
+  cd().symTypes=cd().symTypes.filter(s=>s.id!==id);save();renderSymPage();toast('削除したよ');
+}
+function pickSymType(el,name){document.querySelectorAll('.symtype-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');selSymType=name;}
+function pickSev(el,val,cls){document.querySelectorAll('.sev-btn').forEach(b=>b.classList.remove('sel-l','sel-m','sel-h'));el.classList.add(cls);selSev=val;}
+async function saveSym(){
+  if(!selSymType){toast('症状の種類を選んでね');return;}
+  const mediaIds=await saveMediaFiles('symMediaFiles');
+  cd().symptoms.push({id:Date.now()+'',date:document.getElementById('symDate').value||today(),type:selSymType,count:document.getElementById('symCount').value,time:document.getElementById('symTime').value,severity:selSev||'',note:document.getElementById('symNote').value.trim(),mediaIds});
+  document.getElementById('symCount').value='';document.getElementById('symTime').value='';document.getElementById('symNote').value='';
+  document.querySelectorAll('.sev-btn').forEach(b=>b.classList.remove('sel-l','sel-m','sel-h'));selSev=null;
+  clearMediaBuf('symMediaFiles','symPhotoPrev');
+  save();renderSymPage();renderHome();toast('症状を記録したよ🌡');
+}
+function delSym(id){cd().symptoms=cd().symptoms.filter(s=>s.id!==id);save();renderSymPage();renderHome();}
+async function renderSymPage(){
+  const d=cd();
+  document.getElementById('symEditList').innerHTML=!d.symTypes.length?'<div style="font-family:\'Patrick Hand\',cursive;font-size:12px;color:var(--muted);padding:2px 0">まだ症状がありません</div>':
+    d.symTypes.map(t=>`<div class="sym-edit-item"><div class="sym-edit-name">🏷 ${t.name}</div><div class="sym-edit-btns"><button class="icon-btn icon-btn-edit" onclick="openSymEdit('${t.id}')">✏️</button><button class="icon-btn icon-btn-del" onclick="delSymType('${t.id}')">🗑</button></div></div>`).join('');
+  const picker=document.getElementById('symTypePicker');
+  if(!d.symTypes.length){picker.innerHTML='<div class="symtype-empty">↑ まず症状の種類を追加してね</div>';selSymType=null;}
+  else picker.innerHTML=d.symTypes.map(t=>`<div class="symtype-btn ${selSymType===t.name?'sel':''}" onclick="pickSymType(this,'${t.name}')">${t.name}</div>`).join('');
+  const logEl=document.getElementById('symLogList');
+  const sorted=[...d.symptoms].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!sorted.length){logEl.innerHTML='<div class="empty"><span class="empty-ico">🌡</span>まだ記録がありません</div>';return;}
+  const sevMap={'軽い':'sev-light','中':'sev-mid','重い':'sev-heavy'};
+  // 非同期でメディアを読み込んで表示
+  logEl.innerHTML='<div style="text-align:center;color:var(--muted);padding:10px;font-family:\'Yomogi\',cursive;font-size:12px">読み込み中…</div>';
+  const items=await Promise.all(sorted.map(async s=>{
+    const strip=s.mediaIds?.length?await renderMediaStrip(s.mediaIds,''):'';
+    const mediaHtml=strip?`<div class="sym-photo-strip">${strip}</div>`:'';
+    return `<div class="log-item li-coral"><div style="flex:1"><div class="log-date">${s.date}${s.time?' '+s.time:''}</div><div class="log-val" style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">${s.type}${s.count?`<span style="font-size:13px;color:var(--muted);font-family:'Patrick Hand',cursive">${s.count}回</span>`:''}${s.severity?`<span class="sev ${sevMap[s.severity]||''}">${s.severity}</span>`:''}</div>${s.note?`<div class="log-note">${s.note}</div>`:''}${mediaHtml}</div><span class="del-btn" onclick="delSym('${s.id}')">×</span></div>`;
+  }));
+  logEl.innerHTML=items.join('');
+}
+
+// ── VACCINE ──
+function saveVac(){
+  cd().vaccines.push({id:Date.now()+'',type:document.getElementById('vType').value,date:document.getElementById('vDate').value||today(),next:document.getElementById('vNext').value,note:document.getElementById('vNote').value.trim()});
+  document.getElementById('vNext').value='';document.getElementById('vNote').value='';
+  save();renderVac();renderHome();toast('通院記録を追加したよ💉');
+}
+function renderVac(){
+  const el=document.getElementById('vacList'),s=[...cd().vaccines].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!s.length){el.innerHTML='<div class="empty"><span class="empty-ico">💉</span>まだ記録がありません</div>';return;}
+  el.innerHTML=s.map(v=>{let badge='',bcls='';
+    if(v.next){const days=Math.round((new Date(v.next)-new Date())/864e5);
+      if(days<0){badge='期限超過';bcls='bdg-over';}else if(days<30){badge=`あと${days}日`;bcls='bdg-soon';}else{badge='予定済み';bcls='bdg-ok';}}
+    return `<div class="vac-item"><div><div class="vac-name">${v.type}</div><div class="vac-sub">${v.date}${v.next?' → 次回：'+v.next:''}${v.note?' · '+v.note:''}</div></div><div style="display:flex;align-items:center;gap:8px">${badge?`<span class="badge ${bcls}">${badge}</span>`:''}<span class="del-btn" onclick="delVac('${v.id}')">×</span></div></div>`;}).join('');
+}
+function delVac(id){cd().vaccines=cd().vaccines.filter(v=>v.id!==id);save();renderVac();renderHome();}
+
+// ── FOOD ──
+function pickFood(el){document.querySelectorAll('.food-type-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');selFoodType=el.textContent.trim();}
+function saveFood(){
+  cd().foods.push({id:Date.now()+'',date:document.getElementById('fDate').value||today(),type:selFoodType,brand:document.getElementById('fBrand').value.trim(),amount:document.getElementById('fAmt').value,appetite:document.getElementById('fApp').value});
+  document.getElementById('fBrand').value='';document.getElementById('fAmt').value='';
+  save();renderFLog();renderHome();toast('食事を記録したよ🍽');
+}
+function renderFLog(){
+  const el=document.getElementById('fLogList'),s=[...cd().foods].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!s.length){el.innerHTML='<div class="empty"><span class="empty-ico">🍽</span>まだ記録がありません</div>';return;}
+  el.innerHTML=s.map(f=>`<div class="log-item li-yellow"><div><div class="log-date">${f.date} · ${f.type}</div><div class="log-val">${f.brand||'(名称未入力)'}${f.amount?' '+f.amount+'g':''}</div><div class="log-note">食欲: ${f.appetite}</div></div><span class="del-btn" onclick="delFood('${f.id}')">×</span></div>`).join('');
+}
+function delFood(id){cd().foods=cd().foods.filter(f=>f.id!==id);save();renderFLog();renderHome();}
+
+// ── TOILET ──
+function pickToilet(el,type){document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');selToilet=type;}
+function saveToilet(){
+  const peeCount=document.getElementById('tPeeCount').value;
+  const pooCount=document.getElementById('tPooCount').value;
+  if(!peeCount&&!pooCount){toast('おしっこかうんちの回数を入れてね🐾');return;}
+  cd().toilets.push({
+    id:Date.now()+'',
+    date:document.getElementById('tDate').value||today(),
+    peeCount:peeCount||'0',
+    peeStat:document.getElementById('tPeeStat').value,
+    pooCount:pooCount||'0',
+    pooStat:document.getElementById('tPooStat').value,
+    note:document.getElementById('tNote').value.trim()
+  });
+  document.getElementById('tPeeCount').value='';
+  document.getElementById('tPooCount').value='';
+  document.getElementById('tNote').value='';
+  save();renderTLog();renderHome();toast('排泄を記録したよ🐾');
+}
+function renderTLog(){
+  const el=document.getElementById('tLogList'),s=[...cd().toilets].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!s.length){el.innerHTML='<div class="empty"><span class="empty-ico">🐾</span>まだ記録がありません</div>';return;}
+  el.innerHTML=s.map(tt=>{
+    // 旧フォーマット互換
+    if(tt.type!==undefined){
+      return `<div class="log-item li-pink"><div><div class="log-date">${tt.date}</div><div class="log-val">${tt.type} · ${tt.status||''}</div>${tt.note?`<div class="log-note">${tt.note}</div>`:''}</div><span class="del-btn" onclick="delToilet('${tt.id}')">×</span></div>`;
+    }
+    const pee=+tt.peeCount||0, poo=+tt.pooCount||0;
+    const parts=[];
+    if(pee>0) parts.push(`<span style="color:var(--sky)">💧 ${pee}回（${tt.peeStat||'正常'}）</span>`);
+    if(poo>0) parts.push(`<span style="color:var(--coral)">💩 ${poo}回（${tt.pooStat||'正常'}）</span>`);
+    if(pee===0&&poo===0) parts.push('<span style="color:var(--muted)">記録のみ</span>');
+    return `<div class="log-item li-pink"><div style="flex:1"><div class="log-date">${tt.date}</div><div class="log-val" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">${parts.join('')}</div>${tt.note?`<div class="log-note">${tt.note}</div>`:''}</div><span class="del-btn" onclick="delToilet('${tt.id}')">×</span></div>`;
+  }).join('');
+}
+function delToilet(id){cd().toilets=cd().toilets.filter(t=>t.id!==id);save();renderTLog();renderHome();}
+
+// ── DIARY ──
+function pickMood(el,mood){document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');selMood=mood;}
+async function saveDiary(){
+  const body=document.getElementById('diaryBody').value.trim();
+  if(!body){toast('日記の内容を書いてね📔');return;}
+  const tags=document.getElementById('diaryTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const mediaIds=await saveMediaFiles('diaryMediaFiles');
+  cd().diary.push({
+    id:Date.now()+'',
+    date:document.getElementById('diaryDate').value||today(),
+    title:document.getElementById('diaryTitle').value.trim()||'今日の記録',
+    body,mood:selMood||'😺',tags,mediaIds
+  });
+  document.getElementById('diaryTitle').value='';document.getElementById('diaryBody').value='';document.getElementById('diaryTags').value='';
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));selMood=null;
+  clearMediaBuf('diaryMediaFiles','diaryPhotoPrev');
+  save();renderDiary();toast('日記を書いたよ📔');
+}
+function delDiary(id){cd().diary=cd().diary.filter(d=>d.id!==id);save();renderDiary();}
+async function openDiaryDetail(id){
+  const e=cd().diary.find(d=>d.id===id);if(!e)return;
+  const tagColors=['var(--pink-s)','var(--sky-s)','var(--mint-s)','var(--yellow-s)','var(--lav-s)','var(--coral-s)'];
+  const tagTextColors=['var(--pink)','var(--sky)','var(--mint)','#a07010','var(--lavender)','var(--coral)'];
+  const tagsHtml=e.tags.map((t,i)=>`<span class="diary-tag" style="background:${tagColors[i%6]};color:${tagTextColors[i%6]};border:1.5px solid ${tagTextColors[i%6]}40">#${t}</span>`).join('');
+  const mediaHtml=e.mediaIds?.length?await renderMediaStrip(e.mediaIds,''):'';
+  document.getElementById('diaryDetailInner').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-family:'Yomogi',cursive;font-size:18px;color:var(--ink)">${e.mood} ${e.title}</div>
+      <button class="modal-close" onclick="closeModal('modal-diary')">✕</button>
+    </div>
+    <div style="font-family:'Patrick Hand',cursive;font-size:11px;color:var(--muted);margin-bottom:12px">${e.date}</div>
+    ${mediaHtml?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${mediaHtml}</div>`:''}
+    <div style="font-size:14px;color:var(--ink2);line-height:1.8;white-space:pre-wrap;margin-bottom:14px">${e.body}</div>
+    ${tagsHtml?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px">${tagsHtml}</div>`:''}
+    <button class="btn btn-pink btn-full" onclick="delDiary('${e.id}');closeModal('modal-diary');toast('削除したよ')">🗑 この日記を削除</button>`;
+  openModal('modal-diary');
+}
+async function renderDiary(){
+  const el=document.getElementById('diaryList');
+  const d=cd();
+  const sorted=[...d.diary].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!sorted.length){el.innerHTML='<div class="empty"><span class="empty-ico">📔</span>まだ日記がありません<br><small style="font-family:\'Patrick Hand\',cursive">猫ちゃんとの毎日を記録しよう🐾</small></div>';return;}
+  const groups={};
+  sorted.forEach(e=>{if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e);});
+  const tagColors=['var(--pink-s)','var(--sky-s)','var(--mint-s)','var(--yellow-s)','var(--lav-s)','var(--coral-s)'];
+  const tagTextColors=['var(--pink)','var(--sky)','var(--mint)','#a07010','var(--lavender)','var(--coral)'];
+  const groupHtmls=await Promise.all(Object.entries(groups).map(async([date,entries])=>{
+    const entryHtmls=await Promise.all(entries.map(async e=>{
+      const strip=e.mediaIds?.length?await renderMediaStrip(e.mediaIds,''):'';
+      const stripHtml=strip?`<div class="diary-photo-strip">${strip}</div>`:'';
+      const tagHtml=e.tags.length?`<div class="diary-entry-tags">${e.tags.slice(0,3).map((t,i)=>`<span class="diary-tag" style="background:${tagColors[i%6]};color:${tagTextColors[i%6]};border:1.5px solid ${tagTextColors[i%6]}40">#${t}</span>`).join('')}</div>`:'';
+      return `<div class="diary-entry de-${dow(e.date)}" onclick="openDiaryDetail('${e.id}')">
+        <div class="diary-entry-top"><div>
+          <div class="diary-entry-date">${e.date}</div>
+          <div class="diary-entry-title">${e.mood} ${e.title}</div>
+        </div></div>
+        <div class="diary-entry-body" style="max-height:60px;overflow:hidden">${e.body.slice(0,80)}${e.body.length>80?'…':''}</div>
+        ${stripHtml}${tagHtml}
+      </div>`;
+    }));
+    return `<div class="diary-date-header">📅 ${date}</div>${entryHtmls.join('')}`;
+  }));
+  el.innerHTML=groupHtmls.join('');
+}
+
+// ── SAVE / EXPORT ──
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`nyanko_karte_${today()}.json`;a.click();
+  toast('JSONを保存したよ📦');closeModal('modal-save');
+}
+function importJSON(){document.getElementById('importFile').click();}
+function handleImport(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      S=data;save();renderCats();renderAll();
+      toast('データを読み込んだよ📂');closeModal('modal-save');
+    }catch{toast('ファイルが正しくないよ⚠️');}
+  };
+  reader.readAsText(file);e.target.value='';
+}
+function exportCSV(){
+  const cat=S.cats.find(c=>c.id===S.active);
+  const d=cd();
+  let csv='日付,種類,内容,備考\n';
+  d.logs.forEach(l=>csv+=`${l.date},体重,${l.weight}kg,${l.note||''}\n`);
+  d.symptoms.forEach(s=>csv+=`${s.date},症状,${s.type}${s.count?' '+s.count+'回':''}${s.severity?' '+s.severity:''},${s.note||''}\n`);
+  d.foods.forEach(f=>csv+=`${f.date},食事,${f.type} ${f.brand||''} ${f.amount?f.amount+'g':''},食欲:${f.appetite}\n`);
+  d.vaccines.forEach(v=>csv+=`${v.date},通院,${v.type},${v.note||''}\n`);
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`${cat?.name||'neko'}_log_${today()}.csv`;a.click();
+  toast('CSVを保存したよ📊');closeModal('modal-save');
+}
+function exportDiaryTxt(){
+  const cat=S.cats.find(c=>c.id===S.active);
+  const d=cd();
+  if(!d.diary.length){toast('日記がまだないよ📔');return;}
+  const sorted=[...d.diary].sort((a,b)=>a.date.localeCompare(b.date));
+  let txt=`🐾 ${cat?.name||'ねこ'}の日記\n${'='.repeat(40)}\n\n`;
+  sorted.forEach(e=>{
+    txt+=`📅 ${e.date}\n${e.mood} ${e.title}\n${'─'.repeat(30)}\n${e.body}\n`;
+    if(e.tags.length)txt+=`タグ: ${e.tags.map(t=>'#'+t).join(' ')}\n`;
+    txt+='\n';
+  });
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`${cat?.name||'neko'}_diary_${today()}.txt`;a.click();
+  toast('日記を保存したよ📝');closeModal('modal-save');
+}
+function clearAll(){
+  if(!confirm('本当に全データを削除しますか？\nこの操作は元に戻せません。'))return;
+  STORAGE_KEYS.forEach(k=>localStorage.removeItem(k));
+  S={cats:[{id:1,name:'むぎ',emoji:'🐱',birth:'',breed:'ミックス'}],active:1,data:{1:{logs:[],vaccines:[],foods:[],toilets:[],conds:[],symptoms:[],symTypes:[],diary:[]}}};
+  save();renderCats();renderAll();toast('リセットしたよ🗑');closeModal('modal-save');
+}
+
+// ══════════════════════════════════════
+//  IndexedDB — 写真・動画の永続保存
+// ══════════════════════════════════════
 const DB_NAME='NyanKarteDB', DB_VER=1, STORE='media';
 let db=null;
 function openDB(){
-  return new Promise((res)=>{
+  return new Promise((res,rej)=>{
     const req=indexedDB.open(DB_NAME,DB_VER);
     req.onupgradeneeded=e=>{e.target.result.createObjectStore(STORE,{keyPath:'id'});};
     req.onsuccess=e=>{db=e.target.result;res(db);};
+    req.onerror=e=>rej(e);
   });
 }
-// ... (提供された全ての関数：dbPut, dbGet, fileToBase64, saveMediaFiles, renderMediaStrip等)
+function dbPut(id,data){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).put({id,data});
+    tx.oncomplete=()=>res(); tx.onerror=e=>rej(e);
+  }));
+}
+function dbGet(id){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction(STORE,'readonly');
+    const req=tx.objectStore(STORE).get(id);
+    req.onsuccess=e=>res(e.target.result?.data||null);
+    req.onerror=e=>rej(e);
+  }));
+}
+function dbDel(id){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).delete(id);
+    tx.oncomplete=()=>res(); tx.onerror=e=>rej(e);
+  }));
+}
 
+// ── ファイル → Base64 ──
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>res(e.target.result);
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// ── 一時メディアバッファ（記録前のプレビュー用） ──
+const mediaBuf={symMediaFiles:[],diaryMediaFiles:[]};
+
+function addMediaPreview(input,previewId,bufKey){
+  const files=Array.from(input.files);
+  const prev=document.getElementById(previewId);
+  files.forEach(file=>{
+    const url=URL.createObjectURL(file);
+    const isVideo=file.type.startsWith('video/');
+    const wrap=document.createElement('div');
+    wrap.className='photo-thumb-wrap';
+    const media=document.createElement(isVideo?'video':'img');
+    media.src=url; if(isVideo){media.muted=true;media.autoplay=false;}
+    media.onclick=()=>showFullscreen(url,isVideo);
+    const del=document.createElement('button');
+    del.className='photo-thumb-del';del.textContent='×';
+    const idx=mediaBuf[bufKey].length;
+    mediaBuf[bufKey].push({file,url,isVideo});
+    del.onclick=()=>{mediaBuf[bufKey].splice(idx,1,null);wrap.remove();};
+    wrap.appendChild(media);wrap.appendChild(del);
+    prev.appendChild(wrap);
+  });
+  input.value='';
+}
+
+function clearMediaBuf(bufKey,previewId){
+  mediaBuf[bufKey]=[];
+  const el=document.getElementById(previewId);
+  if(el)el.innerHTML='';
+}
+
+// ── フルスクリーン表示 ──
+function showFullscreen(src,isVideo){
+  const fs=document.createElement('div');
+  fs.className='photo-fullscreen';
+  const media=document.createElement(isVideo?'video':'img');
+  media.src=src; if(isVideo){media.controls=true;media.autoplay=true;}
+  const close=document.createElement('button');
+  close.className='photo-fullscreen-close';close.textContent='✕';
+  close.onclick=()=>fs.remove();
+  fs.appendChild(media);fs.appendChild(close);
+  fs.onclick=e=>{if(e.target===fs)fs.remove();};
+  document.body.appendChild(fs);
+}
+
+// ── メディアをDBに保存してIDリストを返す ──
+async function saveMediaFiles(bufKey){
+  const ids=[];
+  for(const m of mediaBuf[bufKey]){
+    if(!m)continue;
+    const b64=await fileToBase64(m.file);
+    const id='media_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    await dbPut(id,{data:b64,isVideo:m.isVideo,type:m.file.type});
+    ids.push(id);
+  }
+  return ids;
+}
+
+// ── DBから写真を読んでHTML生成 ──
+async function renderMediaStrip(ids,className){
+  if(!ids||!ids.length)return '';
+  const parts=await Promise.all(ids.map(async id=>{
+    const m=await dbGet(id);
+    if(!m)return '';
+    if(m.isVideo){
+      return `<video src="${m.data}" class="${className}" onclick="showFullscreen('${m.data}',true)" muted playsinline></video>`;
+    }
+    return `<img src="${m.data}" class="${className}" onclick="showFullscreen('${m.data}',false)">`;
+  }));
+  return parts.join('');
+}
+
+// ── 猫アバター写真プレビュー ──
+let pendingCatAvatar=null;
+function previewCatAvatar(input){
+  const file=input.files[0];if(!file)return;
+  fileToBase64(file).then(b64=>{
+    pendingCatAvatar=b64;
+    const prev=document.getElementById('ecAvatarPreview');
+    prev.innerHTML=`<img src="${b64}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid var(--pink);display:block">`;
+  });
+  input.value='';
+}
+
+// ── TOAST ──
+let tt2;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tt2);tt2=setTimeout(()=>el.classList.remove('show'),2200);}
+
+// ══════════════════════════════════════
+//  PWA セットアップ
+// ══════════════════════════════════════
+(function setupPWA(){
+
+  // ── アイコン生成（Canvas） ──
+  function makeIcon(size){
+    const c=document.createElement('canvas');
+    c.width=c.height=size;
+    const ctx=c.getContext('2d');
+    // 背景グラデーション
+    const g=ctx.createLinearGradient(0,0,size,size);
+    g.addColorStop(0,'#d42030'); g.addColorStop(.5,'#ee3355'); g.addColorStop(1,'#c01828');
+    ctx.fillStyle=g;
+    // 角丸四角
+    const r=size*0.22;
+    ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(size-r,0);ctx.quadraticCurveTo(size,0,size,r);
+    ctx.lineTo(size,size-r);ctx.quadraticCurveTo(size,size,size-r,size);
+    ctx.lineTo(r,size);ctx.quadraticCurveTo(0,size,0,size-r);
+    ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);ctx.closePath();ctx.fill();
+    // タータンチェック（水色線）
+    ctx.save();ctx.clip();
+    ctx.strokeStyle='rgba(80,200,240,.4)';ctx.lineWidth=size*0.05;
+    const step=size*0.18;
+    for(let x=-size;x<size*2;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,size);ctx.stroke();}
+    for(let y=-size;y<size*2;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(size,y);ctx.stroke();}
+    ctx.restore();
+    // 🐾 絵文字
+    ctx.font=`bold ${size*0.52}px serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('🐾',size/2,size/2+size*0.03);
+    return c.toDataURL('image/png');
+  }
+
+  // アイコンURLを生成してmanifest・apple-touch-iconに設定
+  let icon192='', icon512='';
+  try {
+    icon192=makeIcon(192);
+    icon512=makeIcon(512);
+  } catch(e){console.warn('icon gen failed',e);}
+
+  // ── manifest.json をBlob URLで生成 ──
+  // start_url を現在の絶対URLに固定してlocalStorageのスコープを統一
+  const currentUrl=location.href.split('?')[0].split('#')[0];
+  const manifest={
+    name:'にゃんこカルテ',
+    short_name:'にゃんカルテ',
+    description:'猫ちゃんの健康管理アプリ',
+    start_url:currentUrl,
+    scope:currentUrl.substring(0,currentUrl.lastIndexOf('/')+1),
+    display:'standalone',
+    orientation:'portrait',
+    background_color:'#fff8fc',
+    theme_color:'#d42030',
+    icons:[
+      {src:icon192,sizes:'192x192',type:'image/png',purpose:'any maskable'},
+      {src:icon512,sizes:'512x512',type:'image/png',purpose:'any maskable'}
+    ]
+  };
+  const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  const mURL=URL.createObjectURL(mBlob);
+  document.getElementById('pwa-manifest').href=mURL;
+
+  // Apple Touch Icon
+  if(icon192){
+    document.getElementById('apple-icon').href=icon192;
+  }
+
+  // ── Service Worker（インライン Blob） ──
+  const swCode=`
+const CACHE='nyankarte-v1';
+const ASSETS=['/'];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll([])).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(clients.claim());
+});
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET')return;
+  e.respondWith(
+    caches.match(e.request).then(cached=>{
+      const net=fetch(e.request).then(res=>{
+        if(res&&res.status===200){
+          const clone=res.clone();
+          caches.open(CACHE).then(c=>c.put(e.request,clone));
+        }
+        return res;
+      }).catch(()=>cached);
+      return cached||net;
+    })
+  );
+});
+`;
+  try{
+    const swBlob=new Blob([swCode],{type:'application/javascript'});
+    const swURL=URL.createObjectURL(swBlob);
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register(swURL,{scope:'./'})
+        .then(()=>console.log('SW registered'))
+        .catch(e=>console.warn('SW failed:',e));
+    }
+  }catch(e){console.warn('SW setup failed',e);}
+
+})();
+
+// ── インストールバナー ──
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  showInstallBanner();
+});
+function showInstallBanner(){
+  if(document.getElementById('installBanner'))return;
+  const b=document.createElement('div');
+  b.id='installBanner';
+  b.style.cssText='position:fixed;bottom:88px;left:50%;transform:translateX(-50%);z-index:999;background:#fff;border:2px solid #ff6b9d;border-radius:50px;padding:10px 18px;font-family:Yomogi,cursive;font-size:13px;color:#2d2545;box-shadow:0 4px 18px rgba(45,37,69,.18);display:flex;align-items:center;gap:10px;white-space:nowrap;animation:fadeUp .3s ease';
+  b.innerHTML='<span>🐾 ホーム画面に追加できます！</span><button onclick="installApp()" style="background:#ee3355;color:#fff;border:none;border-radius:50px;padding:6px 14px;font-family:Yomogi,cursive;font-size:12px;cursor:pointer">追加する</button><button onclick="this.parentElement.remove()" style="background:none;border:none;font-size:18px;color:#9890b8;cursor:pointer;padding:0">×</button>';
+  document.body.appendChild(b);
+  setTimeout(()=>b?.remove(),12000);
+}
+function installApp(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(r=>{
+    if(r.outcome==='accepted')toast('ホーム画面に追加したよ🐾');
+    deferredPrompt=null;
+    document.getElementById('installBanner')?.remove();
+  });
+}
+
+// ── MODAL ──
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function bgClose(e,id){if(e.target.classList.contains('overlay'))closeModal(id);}
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
+
+// ── 起動時データ確認（デバッグ用・初回のみトースト） ──
+function checkDataOnStart(){
+  const count = S.cats ? S.cats.length : 0;
+  console.log('🐾 にゃんこカルテ起動 / 猫の数:', count, '/ キー:', STORAGE_KEY);
+  // 万が一データが消えていたら警告
+  if(count===1 && S.cats[0].name==='むぎ' && !S.data[1]?.logs?.length){
+    // 初期値かもしれないので全キーを再スキャン
+    for(const key of STORAGE_KEYS){
+      if(key===STORAGE_KEY)continue;
+      try{
+        const raw=localStorage.getItem(key);
+        if(raw){
+          const p=JSON.parse(raw);
+          if(p && p.cats && (p.cats.length>1 || p.cats[0]?.name!=='むぎ')){
+            S=p;
+            save();
+            renderCats();renderAll();
+            toast('データを復元しました🐾');
+            console.log('緊急復元:', key);
+            return;
+          }
+        }
+      }catch(e){}
+    }
+  }
+}
 
 init();
+checkDataOnStart();
 </script>
 </body>
 </html>
