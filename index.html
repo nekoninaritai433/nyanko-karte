@@ -6,20 +6,20 @@
     <title>にゃんこカルテ</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* にゃんこ総監督こだわりのピンク基調デザイン */
-        :root { --main-pink: #ffb6c1; --dark-pink: #d81b60; --bg-color: #fffafb; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; }
-        h1 { text-align: center; color: var(--dark-pink); font-size: 1.5em; }
-        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid var(--main-pink); }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--dark-pink); }
-        select, input, textarea, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { background-color: var(--main-pink); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        button:hover { background-color: var(--dark-pink); }
-        .cat-list-item { background: #fef0f3; padding: 10px; margin-bottom: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
-        canvas { background: white; border-radius: 10px; margin-top: 20px; }
-        .support-card { background: #fff5f8; border: 2px solid var(--main-pink); border-radius: 15px; padding: 20px; text-align: center; margin-top: 30px; }
+        /* 総監督こだわりの「かわいい」デザインを完全復刻 */
+        body { font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif; background-color: #fff0f5; margin: 0; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 5px solid #ffb6c1; }
+        h1 { text-align: center; color: #ff69b4; font-size: 24px; text-shadow: 1px 1px 2px #ffc0cb; }
+        .card { background: #fffafa; border: 2px solid #ffc0cb; border-radius: 20px; padding: 15px; margin-bottom: 20px; }
+        label { display: block; margin: 10px 0 5px; color: #ff1493; font-weight: bold; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 2px solid #ffb6c1; border-radius: 10px; box-sizing: border-box; font-size: 16px; background-color: #fff; }
+        button { background: linear-gradient(#ffb6c1, #ff69b4); color: white; border: none; padding: 12px; border-radius: 25px; width: 100%; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; box-shadow: 0 4px 0 #db7093; }
+        button:active { transform: translateY(2px); box-shadow: 0 2px 0 #db7093; }
+        .cat-tag { background: #ff69b4; color: white; padding: 5px 15px; border-radius: 15px; display: inline-block; margin: 5px; font-size: 14px; }
+        #history-list { margin-top: 20px; }
+        .history-item { background: #fff; border-left: 5px solid #ff69b4; padding: 10px; margin-bottom: 10px; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
+        /* 応援カードをにゃんこさんの世界観に統一 */
+        .support-card { background: #fff0f5; border: 3px dashed #ff69b4; border-radius: 20px; padding: 15px; text-align: center; margin-top: 30px; }
     </style>
 </head>
 <body>
@@ -28,56 +28,43 @@
     <h1>🐾 にゃんこカルテ 🐾</h1>
 
     <div class="card">
-        <h3>猫ちゃんを登録（最大8匹）</h3>
-        <input type="text" id="cat-name-input" placeholder="名前を入力（例：もけまる）">
-        <button onclick="addCat()">新しい猫を追加</button>
-        <div id="cat-list"></div>
+        <label>🐱 新しい猫ちゃんを登録</label>
+        <input type="text" id="cat-name-input" placeholder="お名前を入力してね">
+        <button onclick="addCat()">家族に追加する</button>
+        <div id="cat-list" style="margin-top:10px;"></div>
     </div>
 
     <div class="card">
-        <h3>今日の詳細記録</h3>
-        <div class="input-group">
-            <label>猫ちゃんを選択</label>
-            <select id="cat-selector"><option value="">選択してください</option></select>
-        </div>
-        <div class="input-group">
-            <label>体重 (kg)</label>
-            <input type="number" id="weight" step="0.1" placeholder="0.0">
-        </div>
-        <div class="input-group">
-            <label>ごはん（食べた量や種類）</label>
-            <textarea id="food" placeholder="例：カリカリ 50g 完食"></textarea>
-        </div>
-        <div class="input-group">
-            <label>トイレ（回数や状態）</label>
-            <input type="text" id="toilet" placeholder="例：おしっこ2回、うんち1回（普通）">
-        </div>
-        <div class="input-group">
-            <label>体調・メモ（嘔吐、くしゃみなど）</label>
-            <textarea id="memo" placeholder="気になることがあれば入力"></textarea>
-        </div>
-        <div class="input-group">
-            <label>写真・動画（スマホに保存されます）</label>
-            <input type="file" id="photo-input" accept="image/*,video/*">
-        </div>
-        <button onclick="saveRecord()">この内容で記録を保存</button>
+        <label>📅 今日の体調チェック</label>
+        <select id="cat-selector"><option value="">猫ちゃんを選んでね</option></select>
+        <label>⚖️ 体重 (kg)</label>
+        <input type="number" id="weight" step="0.1" placeholder="0.0">
+        <label>🍽️ ごはんの様子</label>
+        <textarea id="food" placeholder="何を食べたかな？"></textarea>
+        <label>🚽 トイレの様子</label>
+        <input type="text" id="toilet" placeholder="回数や状態など">
+        <label>📝 メモ（体調や嘔吐など）</label>
+        <textarea id="memo" placeholder="気になることがあれば何でも"></textarea>
+        <label>📸 写真・動画</label>
+        <input type="file" id="photo-input" accept="image/*,video/*">
+        <button onclick="saveRecord()">思い出と体調を保存</button>
     </div>
 
     <div class="card">
-        <h3>健康グラフと履歴</h3>
-        <select id="view-selector" onchange="updateView()"><option value="">猫ちゃんを選択</option></select>
+        <label>📈 健康グラフ</label>
+        <select id="view-selector" onchange="updateView()"><option value="">猫ちゃんを選んでね</option></select>
         <canvas id="weightChart"></canvas>
-        <div id="history-list" style="margin-top:20px;"></div>
+        <div id="history-list"></div>
     </div>
 
     <div class="support-card">
-        <h3 style="color: var(--dark-pink);">🐾 活動を応援する 🐾</h3>
+        <h3 style="color: #ff1493; margin-top: 0;">🎀 応援のお願い 🎀</h3>
+        <p style="font-size: 12px; color: #666;">収益はすべて猫ちゃんたちのために使われます</p>
         <a href="https://store.line.me/stickershop/author/6094566/ja" target="_blank" style="text-decoration: none;">
-            <div style="background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: inline-block; width: 90%; border: 1px solid var(--main-pink);">
-                <img src="https://stickershop.line-scdn.net/stickershop/v1/product/33876188/LINEStorePC/main.png" alt="忍者もけまる" style="width: 80px;">
-                <h4 style="margin: 10px 0 5px 0; color: #333;">LINEスタンプ一覧</h4>
-                <p style="font-size: 0.75em; color: #ff69b4; font-weight: bold;">新作もこちらからチェック！</p>
-                <div style="background: #ff69b4; color: white; padding: 8px 15px; border-radius: 20px; display: inline-block; margin-top: 10px;">応援（購入）ページへ</div>
+            <div style="background: white; border-radius: 15px; padding: 10px; border: 2px solid #ffb6c1;">
+                <img src="https://stickershop.line-scdn.net/stickershop/v1/product/33876188/LINEStorePC/main.png" style="width: 70px;">
+                <p style="margin: 5px 0; color: #ff69b4; font-weight: bold; font-size: 14px;">LINEスタンプを見る</p>
+                <span style="font-size: 11px; color: #999;">（作者ページへ飛びます）</span>
             </div>
         </a>
     </div>
@@ -86,13 +73,11 @@
 <script>
     let db;
     const request = indexedDB.open("NyankoKarteDB", 2);
-
     request.onupgradeneeded = (e) => {
         db = e.target.result;
         if (!db.objectStoreNames.contains("cats")) db.createObjectStore("cats", { keyPath: "id", autoIncrement: true });
         if (!db.objectStoreNames.contains("records")) db.createObjectStore("records", { keyPath: "id", autoIncrement: true });
     };
-
     request.onsuccess = (e) => { db = e.target.result; loadCats(); };
 
     function addCat() {
@@ -100,7 +85,7 @@
         if (!name) return;
         const store = db.transaction(["cats"], "readwrite").objectStore("cats");
         store.count().onsuccess = (e) => {
-            if (e.target.result >= 8) { alert("8匹までです"); return; }
+            if (e.target.result >= 8) { alert("8匹までだよ！"); return; }
             store.add({ name: name }).onsuccess = () => {
                 document.getElementById("cat-name-input").value = "";
                 loadCats();
@@ -109,28 +94,25 @@
     }
 
     function loadCats() {
-        const store = db.transaction(["cats"], "readonly").objectStore("cats");
-        store.getAll().onsuccess = (e) => {
+        db.transaction(["cats"], "readonly").objectStore("cats").getAll().onsuccess = (e) => {
             const cats = e.target.result;
             const list = document.getElementById("cat-list");
             const sel1 = document.getElementById("cat-selector");
             const sel2 = document.getElementById("view-selector");
-            list.innerHTML = ""; sel1.innerHTML = '<option value="">選択</option>'; sel2.innerHTML = '<option value="">選択</option>';
+            list.innerHTML = ""; sel1.innerHTML = '<option value="">選んでね</option>'; sel2.innerHTML = '<option value="">選んでね</option>';
             cats.forEach(cat => {
-                list.innerHTML += `<div class="cat-list-item">${cat.name} <button style="width:auto;" onclick="deleteCat(${cat.id})">削除</button></div>`;
+                list.innerHTML += `<span class="cat-tag">${cat.name} <span onclick="deleteCat(${cat.id})" style="cursor:pointer; margin-left:5px;">×</span></span>`;
                 sel1.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
                 sel2.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
             });
         };
     }
 
-    function deleteCat(id) { if (confirm("削除しますか？")) db.transaction(["cats"], "readwrite").objectStore("cats").delete(id).onsuccess = loadCats; }
+    function deleteCat(id) { if (confirm("削除する？")) db.transaction(["cats"], "readwrite").objectStore("cats").delete(id).onsuccess = loadCats; }
 
     function saveRecord() {
         const catId = document.getElementById("cat-selector").value;
-        const photoFile = document.getElementById("photo-input").files[0];
-        if (!catId) { alert("猫ちゃんを選択してください"); return; }
-
+        if (!catId) { alert("猫ちゃんを選んでね"); return; }
         const record = {
             catId: parseInt(catId),
             weight: parseFloat(document.getElementById("weight").value) || 0,
@@ -138,11 +120,10 @@
             toilet: document.getElementById("toilet").value,
             memo: document.getElementById("memo").value,
             date: new Date().toLocaleDateString(),
-            photo: photoFile || null
+            photo: document.getElementById("photo-input").files[0] || null
         };
-
         db.transaction(["records"], "readwrite").objectStore("records").add(record).onsuccess = () => {
-            alert("記録完了！");
+            alert("保存したよ！🐾");
             ["weight", "food", "toilet", "memo", "photo-input"].forEach(id => document.getElementById(id).value = "");
             updateView();
         };
@@ -155,17 +136,16 @@
         db.transaction(["records"], "readonly").objectStore("records").getAll().onsuccess = (e) => {
             const records = e.target.result.filter(r => r.catId === catId);
             const history = document.getElementById("history-list");
-            history.innerHTML = "<h4>記録履歴</h4>";
+            history.innerHTML = '<p style="color:#ff69b4; font-weight:bold;">📝 過去のきろく</p>';
             const labels = []; const weights = [];
             records.reverse().forEach(r => {
                 labels.push(r.date); weights.push(r.weight);
-                let photoHtml = r.photo ? `<div style="margin-top:10px;">(写真/動画保存済み)</div>` : "";
-                history.innerHTML += `<div class="card" style="font-size:0.9em;"><strong>${r.date}</strong><br>体重: ${r.weight}kg<br>ごはん: ${r.food}<br>トイレ: ${r.toilet}<br>${r.memo}${photoHtml}</div>`;
+                history.innerHTML += `<div class="history-item"><strong>${r.date}</strong><br>体重: ${r.weight}kg<br>ごはん: ${r.food}<br>メモ: ${r.memo}</div>`;
             });
             if (myChart) myChart.destroy();
             myChart = new Chart(document.getElementById('weightChart').getContext('2d'), {
                 type: 'line',
-                data: { labels: labels.reverse(), datasets: [{ label: '体重 (kg)', data: weights.reverse(), borderColor: '#d81b60' }] }
+                data: { labels: labels.reverse(), datasets: [{ label: '体重', data: weights.reverse(), borderColor: '#ff69b4', fill: false }] }
             });
         };
     }
